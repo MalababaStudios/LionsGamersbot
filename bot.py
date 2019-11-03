@@ -4,8 +4,9 @@ The bot will be run from this file. Here the handler functions will be assigned.
 
 import logging
 import handlers
-import database
-from telegram.ext import Updater, CallbackQueryHandler, CommandHandler, MessageHandler, Filters, PreCheckoutQueryHandler
+import const
+from telegram.ext import Updater, CallbackQueryHandler, CommandHandler, MessageHandler, Filters,\
+    PreCheckoutQueryHandler, RegexHandler
 
 from bot_tokens import BOT_TOKEN
 
@@ -28,8 +29,9 @@ def main():
     updater = Updater(BOT_TOKEN)
     h = updater.dispatcher.add_handler
 
+    const.aux.BOT_USERNAME = updater.bot.username
+
     # Assigning handlers
-    h(CommandHandler("start", handlers.start))
     h(CommandHandler("help", handlers.help))
     h(CommandHandler("more", handlers.more))
     h(CommandHandler("ping", handlers.ping))
@@ -41,8 +43,15 @@ def main():
     h(CallbackQueryHandler(handlers.send_donation_receipt, pattern=r"donate$", pass_user_data=True))
     h(MessageHandler(filters=Filters.successful_payment, callback=handlers.completed_donation))
     h(PreCheckoutQueryHandler(handlers.approve_transaction))
+    h(CommandHandler("ts3", handlers.ts3_command))
+    h(CommandHandler("discord", handlers.discord_command))
+    h(RegexHandler(r"/start notifications", handlers.ts3_notifications_panel))
+    h(CommandHandler("start", handlers.start))
+    h(CallbackQueryHandler(handlers.ts3_notifications_manage, pattern=r"notify_[activate|deactivate]"))
 
     updater.dispatcher.add_error_handler(handlers.error)
+
+    updater.dispatcher.job_queue.run_repeating(handlers.notify_new_connections, 300, 0)
 
     updater.start_polling()
 

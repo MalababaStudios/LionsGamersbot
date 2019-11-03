@@ -12,5 +12,6 @@
   "donation_title": "Donación",
   "donation_description": "Gracias por aportar a este proyecto. Usa el botón pagar para proceder al pago.",
   "donations_not_available": "En este momento las donaciones no están disponibles. Puedes contactar con el desarrolador con /support",
-  "donation_completed": "Muchas gracias por donar "
+  "donation_completed": "Muchas gracias por donar ",
+  "notifications_panel": "Activa/desactiva las notificaciones de quién se conecta a ts3"
 }

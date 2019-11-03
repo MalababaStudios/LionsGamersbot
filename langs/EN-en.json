@@ -12,5 +12,6 @@
   "donation_title": "Donation",
   "donation_description": "Thank you for supporting this project. Use the button pay to send the money.",
   "donations_not_available": "In this moment the donations are not available. You can contact the administrator with /support <message>",
-  "donation_completed": "Thank you for your donation ❤️"
+  "donation_completed": "Thank you for your donation ❤️",
+  "notifications_panel": "Activate/deactivate the ts3 user connection notifications"
 }
