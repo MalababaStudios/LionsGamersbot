@@ -206,13 +206,13 @@ def _get_ts3_info(get_channels=False):
         conexiones.append((client[b"client_database_id"], client[b"client_nickname"]))
 
     if get_channels:
-        data = ""
+        data = b""
         for cid in channels_in_use:
             tn.write(b"channelinfo cid=%s\n" % cid)
             if data:
                 data += "|"
             data += "cid=%s " % cid
-            data += str(tn.read_until(b"error id=0 msg=ok\n", 5))
+            data += (tn.read_until(b"error id=0 msg=ok\n", 5))
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
