@@ -212,7 +212,7 @@ def _get_ts3_info(get_channels=False):
             if data:
                 data += "|"
             data += "cid=%s " % cid
-            data += (tn.read_until(b"error id=0 msg=ok\n", 5))
+            data += tn.read_until(b"error id=0 msg=ok\n", 5)
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
