@@ -150,21 +150,21 @@ def error(bot, update, error):
 
 def _parse_telnet_data(data):
 
-    user_list = data.replace(b"error id=0 msg=ok", b"").split(b"|")
+    user_list = data.replace("error id=0 msg=ok", "").split("|")
     parsed = []
 
     for user in user_list:
         new = {}
         parameters = user.split()
         for parameter in parameters:
-            s = parameter.split(b"=")
+            s = parameter.split("=")
             if len(s) > 1:
-                s[1] = s[1].replace(b"\\s", b" ")
-                s[1] = s[1].replace(b"\\p", b"|")
+                s[1] = s[1].replace("\\s", " ")
+                s[1] = s[1].replace("\\p", "|")
                 new[s[0]] = s[1]
             else:
                 new[s[0]] = None
-        if "client_nickname" in new and b"vetutest" in new["client_nickname"]:
+        if "client_nickname" in new and "vetutest" in new["client_nickname"]:
             continue
         parsed.append(new)
 
