@@ -208,11 +208,11 @@ def _get_ts3_info(get_channels=False):
     if get_channels:
         data = ""
         for cid in channels_in_use:
-            tn.write("channelinfo cid=%s\n" % cid)
+            tn.write(b"channelinfo cid=%s\n" % cid)
             if data:
                 data += "|"
             data += "cid=%s " % cid
-            data += tn.read_until("error id=0 msg=ok\n", 5)
+            data += tn.read_until(b"error id=0 msg=ok\n", 5)
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
@@ -321,7 +321,8 @@ def ts3_notifications_panel(bot, update):
     keyboard = [[InlineKeyboardButton("🔔", callback_data="notify_activate"),
                  InlineKeyboardButton("🔕", callback_data="notify_deactivate")]]
 
-    update.effective_message.reply_text(lang.get_text("notifications_panel"))
+    update.effective_message.reply_text(lang.get_text("notifications_panel"),
+                                        reply_markup=InlineKeyboardMarkup(keyboard))
 
 
 def ts3_notifications_manage(bot, update):
