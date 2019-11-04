@@ -330,16 +330,16 @@ def ts3_notifications_manage(bot, update):
     conn = database.database.get_connection()
 
     if update.callback_query.data == "notify_activate":
-        r = conn.execute("SELECT * FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.user_id)
+        r = conn.execute("SELECT * FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.id)
 
         # Check if the user is already in the database
         if not r.fetchone():
-            conn.execute("INSERT INTO user_ts3_notifications_subscriptions VALUES (?)", update.effective_user.user_id)
+            conn.execute("INSERT INTO user_ts3_notifications_subscriptions VALUES (?)", update.effective_user.id)
             conn.commit()
 
         update.callback_query.reply("🔔 Notificaciones activadas")
     else:
-        conn.execute("DELETE FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.user_id)
+        conn.execute("DELETE FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.id)
         conn.commit()
 
         update.callback_query.reply("🔕 Notificaciones desactivadas")
