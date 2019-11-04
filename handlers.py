@@ -177,7 +177,7 @@ def _parse_telnet_data(data):
 def _server_group_to_text(serverg_list):
     server_group_to_emoji = {6: "👑", 8: "💩", 7: "🐶", 9: "👮", 10: "🦁", 11: "❤️"}
     text = ""
-    s = serverg_list.split(",")
+    s = serverg_list.split(b",")
     serverg_list = map(int, s)
 
     for grupo in serverg_list:
