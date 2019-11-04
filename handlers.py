@@ -8,6 +8,7 @@ import json
 import telnetlib
 import requests
 import database
+import logging
 from bot_tokens import PAYMENT_PROVIDER_TOKEN
 from lang import get_lang
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
@@ -17,6 +18,7 @@ NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notif
                                                                      url="t.me/%s?start=notifications"
                                                                          % const.aux.BOT_USERNAME)]])
 
+logger = logging.getLogger(__name__)
 ts3_connections = []
 
 
@@ -164,17 +166,18 @@ def _parse_telnet_data(data):
                 new[s[0]] = s[1]
             else:
                 new[s[0]] = None
-        if "client_nickname" in new and b"vetutest" in new["client_nickname"]:
+        if b"client_nickname" in new and b"vetutest" in new[b"client_nickname"]:
             continue
         parsed.append(new)
 
+    logger.debug("PARSED DATA:" + str(parsed))
     return parsed
 
 
 def _server_group_to_text(serverg_list):
     server_group_to_emoji = {6: "👑", 8: "💩", 7: "🐶", 9: "👮", 10: "🦁", 11: "❤️"}
     text = ""
-    s = serverg_list.split(",")
+    s = serverg_list.split(b",")
     serverg_list = map(int, s)
 
     for grupo in serverg_list:
@@ -210,9 +213,10 @@ def _get_ts3_info(get_channels=False):
         for cid in channels_in_use:
             tn.write(b"channelinfo cid=%s\n" % cid)
             if data:
-                data += "|"
+                data += b"|"
             data += b"cid=%s " % cid
             data += tn.read_until(b"error id=0 msg=ok\n", 5)
+        logger.debug("CHANNELS TO BE PARSED:\n" + str(data))
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
@@ -294,13 +298,13 @@ def ts3_command(bot, update):
         text = "*Actualmente conectados:\n\n*"
 
         for channel in channels_in_use:
-            text += "*%s*\n" % channel["channel_name"]
+            text += "*%s*\n" % channel[b"channel_name"].decode("utf-8")
             for client in clients:
-                if client["cid"] == channel["cid"]:
+                if client[b"cid"] == channel[b"cid"]:
                     text = text.replace("{0}", "{1}")
 
-                    text += "{0} %s - %s\n" % (client["client_nickname"],
-                                               _server_group_to_text(client["client_servergroups"]))
+                    text += "{0} %s - %s\n" % (client[b"client_nickname"].decode("utf-8"),
+                                               _server_group_to_text(client[b"client_servergroups"]))
             text = text.format("└", "├") + "\n"
 
         notify_new_connections(bot, clients=clients)
