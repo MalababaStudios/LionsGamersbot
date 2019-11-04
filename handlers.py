@@ -337,11 +337,11 @@ def ts3_notifications_manage(bot, update):
             conn.execute("INSERT INTO user_ts3_notifications_subscriptions VALUES (?)", [update.effective_user.id])
             conn.commit()
 
-        update.callback_query.reply("🔔 Notificaciones activadas")
+        update.callback_query.answer("🔔 Notificaciones activadas")
     else:
         conn.execute("DELETE FROM user_ts3_notifications_subscriptions WHERE id=?", [update.effective_user.id])
         conn.commit()
 
-        update.callback_query.reply("🔕 Notificaciones desactivadas")
+        update.callback_query.answer("🔕 Notificaciones desactivadas")
 
     conn.close()
