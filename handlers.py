@@ -303,7 +303,7 @@ def ts3_command(bot, update):
                 if client[b"cid"] == channel[b"cid"]:
                     text = text.replace("{0}", "{1}")
 
-                    text += "{0} %s - %s\n" % (str(client[b"client_nickname"]),
+                    text += "{0} %s - %s\n" % (client[b"client_nickname"].decode("utf-8"),
                                                _server_group_to_text(client[b"client_servergroups"]))
             text = text.format("└", "├") + "\n"
 
