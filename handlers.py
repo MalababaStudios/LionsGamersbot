@@ -8,6 +8,7 @@ import json
 import telnetlib
 import requests
 import database
+import logging
 from bot_tokens import PAYMENT_PROVIDER_TOKEN
 from lang import get_lang
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
@@ -17,6 +18,7 @@ NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notif
                                                                      url="t.me/%s?start=notifications"
                                                                          % const.aux.BOT_USERNAME)]])
 
+logger = logging.getLogger(__name__)
 ts3_connections = []
 
 
@@ -168,6 +170,7 @@ def _parse_telnet_data(data):
             continue
         parsed.append(new)
 
+    logger.debug("PARSED DATA:" + parsed)
     return parsed
 
 
@@ -213,6 +216,7 @@ def _get_ts3_info(get_channels=False):
                 data += "|"
             data += b"cid=%s " % cid
             data += tn.read_until(b"error id=0 msg=ok\n", 5)
+        logger.debug("CHANNELS TO BE PARSED:\n" + str(data))
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
