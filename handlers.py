@@ -166,7 +166,7 @@ def _parse_telnet_data(data):
                 new[s[0]] = s[1]
             else:
                 new[s[0]] = None
-        if "client_nickname" in new and b"vetutest" in new["client_nickname"]:
+        if b"client_nickname" in new and b"vetutest" in new[b"client_nickname"]:
             continue
         parsed.append(new)
 
@@ -298,12 +298,12 @@ def ts3_command(bot, update):
         text = "*Actualmente conectados:\n\n*"
 
         for channel in channels_in_use:
-            text += "*%s*\n" % channel[b"channel_name"]
+            text += "*%s*\n" % str(channel[b"channel_name"])
             for client in clients:
                 if client[b"cid"] == channel[b"cid"]:
                     text = text.replace("{0}", "{1}")
 
-                    text += "{0} %s - %s\n" % (client[b"client_nickname"],
+                    text += "{0} %s - %s\n" % (str(client[b"client_nickname"]),
                                                _server_group_to_text(client[b"client_servergroups"]))
             text = text.format("└", "├") + "\n"
 
