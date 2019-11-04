@@ -243,7 +243,7 @@ def notify_new_connections(bot, job=None, clients=None):
 
     for f in new:
         text = text.replace("{1}", "{2}").replace("{0}", "{1}")
-        text += "%s{0}" % f[1]
+        text += "%s{0}" % f[1].encode("utf-8")
     text = text.format(".", " y ", ", ")
 
     conn = database.database.get_connection()
