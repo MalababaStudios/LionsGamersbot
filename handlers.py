@@ -206,13 +206,13 @@ def _get_ts3_info(get_channels=False):
         conexiones.append((client[b"client_database_id"], client[b"client_nickname"]))
 
     if get_channels:
-        data = ""
+        data = b""
         for cid in channels_in_use:
             tn.write(b"channelinfo cid=%s\n" % cid)
             if data:
                 data += "|"
-            data += "cid=%s " % cid
-            data += str(tn.read_until(b"error id=0 msg=ok\n", 5))
+            data += b"cid=%s " % cid
+            data += tn.read_until(b"error id=0 msg=ok\n", 5)
         channels_in_use = _parse_telnet_data(data)
 
     tn.write(b"logout\n")
@@ -330,18 +330,18 @@ def ts3_notifications_manage(bot, update):
     conn = database.database.get_connection()
 
     if update.callback_query.data == "notify_activate":
-        r = conn.execute("SELECT * FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.user_id)
+        r = conn.execute("SELECT * FROM user_ts3_notifications_subscriptions WHERE id=?", [update.effective_user.id])
 
         # Check if the user is already in the database
         if not r.fetchone():
-            conn.execute("INSERT INTO user_ts3_notifications_subscriptions VALUES (?)", update.effective_user.user_id)
+            conn.execute("INSERT INTO user_ts3_notifications_subscriptions VALUES (?)", [update.effective_user.id])
             conn.commit()
 
-        update.callback_query.reply("🔔 Notificaciones activadas")
+        update.callback_query.answer("🔔 Notificaciones activadas")
     else:
-        conn.execute("DELETE FROM user_ts3_notifications_subscriptions WHERE id=?", update.effective_user.user_id)
+        conn.execute("DELETE FROM user_ts3_notifications_subscriptions WHERE id=?", [update.effective_user.id])
         conn.commit()
 
-        update.callback_query.reply("🔕 Notificaciones desactivadas")
+        update.callback_query.answer("🔕 Notificaciones desactivadas")
 
     conn.close()
