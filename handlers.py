@@ -170,7 +170,7 @@ def _parse_telnet_data(data):
             continue
         parsed.append(new)
 
-    logger.debug("PARSED DATA:" + parsed)
+    logger.debug("PARSED DATA:" + str(parsed))
     return parsed
 
 
