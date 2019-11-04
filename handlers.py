@@ -355,6 +355,8 @@ def ts3_notifications_manage(bot, update):
 
 
 def _check_admin_id(update):
+    if update.effective_user_id != const.ADMIN_TELEGRAM_ID:
+        logger.warning("UNAUTHORIZED ADMIN COMMAND BY ORDER OF: %s" % update.effective_user)
     return update.effective_user.id == const.ADMIN_TELEGRAM_ID
 
 
