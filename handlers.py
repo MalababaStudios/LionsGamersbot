@@ -298,13 +298,13 @@ def ts3_command(bot, update):
         text = "*Actualmente conectados:\n\n*"
 
         for channel in channels_in_use:
-            text += "*%s*\n" % channel["channel_name"]
+            text += "*%s*\n" % channel[b"channel_name"]
             for client in clients:
-                if client["cid"] == channel["cid"]:
+                if client[b"cid"] == channel[b"cid"]:
                     text = text.replace("{0}", "{1}")
 
-                    text += "{0} %s - %s\n" % (client["client_nickname"],
-                                               _server_group_to_text(client["client_servergroups"]))
+                    text += "{0} %s - %s\n" % (client[b"client_nickname"],
+                                               _server_group_to_text(client[b"client_servergroups"]))
             text = text.format("└", "├") + "\n"
 
         notify_new_connections(bot, clients=clients)
