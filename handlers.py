@@ -213,7 +213,7 @@ def _get_ts3_info(get_channels=False):
         for cid in channels_in_use:
             tn.write(b"channelinfo cid=%s\n" % cid)
             if data:
-                data += "|"
+                data += b"|"
             data += b"cid=%s " % cid
             data += tn.read_until(b"error id=0 msg=ok\n", 5)
         logger.debug("CHANNELS TO BE PARSED:\n" + str(data))
