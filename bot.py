@@ -53,6 +53,7 @@ def main():
     h(CommandHandler("start", handlers.start))
     h(CallbackQueryHandler(handlers.ts3_notifications_manage, pattern=r"notify_[activate|deactivate]"))
     h(CommandHandler("/campaigns", handlers.admin_campaigns))
+    h(CommandHandler("/admin_help", handlers.admin_help))
     h(CommandHandler("/new_campaign", handlers.admin_new_campaign))
     h(CommandHandler("/end_campaign", handlers.admin_end_campaign))
     h(CommandHandler("/send_campaign", handlers.admin_send_campaign))
