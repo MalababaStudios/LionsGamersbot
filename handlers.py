@@ -250,6 +250,8 @@ def notify_new_connections(bot, job=None, clients=None):
     r = conn.execute("SELECT * FROM user_ts3_notifications_subscriptions")
     notify = [x[0] for x in r.fetchall()]
 
+    logger.info("Notifying %s users of %s new connections" % (len(notify), len(new)))
+
     for user_id in notify:
         try:
             bot.send_message(user_id, text, reply_markup=NOTIFY_KEYBOARD_MARKUP)
