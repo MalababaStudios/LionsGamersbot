@@ -9,6 +9,7 @@ import telnetlib
 import requests
 import database
 import logging
+import pprint as pp
 from bot_tokens import PAYMENT_PROVIDER_TOKEN
 from lang import get_lang
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
@@ -351,3 +352,198 @@ def ts3_notifications_manage(bot, update):
         update.callback_query.answer("🔕 Notificaciones desactivadas")
 
     conn.close()
+
+
+def _check_admin_id(update):
+    return update.effective_user.id == const.ADMIN_TELEGRAM_ID
+
+
+def admin_help(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    commands = """/campaigns
+    /new_campaign (message txt, objective int, repeat (y/N))
+    /end_campaign (id)
+    /send_campaign (id, pin (S/n))
+    /donors
+    /new_donation (nick txt, amount float)
+    """
+
+    update.effective_message.reply_text()
+
+def admin_campaigns(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    conn = database.database.get_connection()
+
+    c = conn.execute("SELECT * FROM donation_campaigns")
+    result = database.database.get_all_fetched_as_dict(c)
+
+    update.effective_message.reply_text(pp.pformat(result, 2))
+
+    conn.close()
+
+def admin_new_campaign(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    args = update.effective_message.text.replace("/new_campaigns ", "").split("\n")
+
+    if args < 2 or args > 3:
+        update.effective_message.reply_text("Bad arguments")
+        return
+
+    if len(args) == 2:
+        args.append(False)
+    else:
+        if args[2].lower() == "y":
+            args[2] = True
+        elif args[2].lower() == "n":
+            args[2] = False
+        else:
+            update.effective_message.reply_text("Bad arguments")
+            return
+
+    conn = database.database.get_connection()
+
+    sql = "INSERT INTO donation_campaigns (message, objective, progress, repeat_monthly) VALUES (?, ?, ?, ?)"
+    conn.execute(sql, args)
+    conn.commit()
+    conn.close()
+
+    update.effective_message.reply_text("Success?")
+
+
+def admin_end_campaign(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    args = update.effective_message.text.replace("/new_campaigns ", "").split("\n")
+
+    if len(args) < 1:
+        update.effective_message.reply_text("Bad arguments")
+        return
+
+    conn = database.database.get_connection()
+
+    conn.execute("DELETE FROM donation_campaigns WHERE id=?", [args[0]])
+    conn.commit()
+    conn.close()
+
+    update.effective_message.reply_text("Success?")
+
+
+def admin_send_campaign(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    args = update.effective_message.text.replace("/send_campaign ", "").split("\n")
+
+    if len(args) < 1 or len(args) > 2:
+        update.effective_message.reply_text("Bad arguments")
+        return
+
+    if len(args) == 1:
+        args.append(True)
+    elif len(args) > 1:
+        if args[1].lower() == "y":
+            args[1] = True
+        elif args[1].lower() == "n":
+            args[1] = False
+        else:
+            update.effective_message.reply_text("Bad arguments")
+            return
+
+    conn = database.database.get_connection()
+
+    c = conn.execute("SELECT * FROM donation_campaigns WHERE id=?", [args[0]])
+    campaign_info = database.database.get_one_fetched_as_dict(c)
+    c = conn.execute("SELECT nick FROM donors LIMIT 5 ORDER BY amount DESC")
+    conn.close()
+    top_5_donors = database.database.get_all_fetched_as_dict(c)
+    top_5_donors = [x["nick"] for x in top_5_donors]
+    
+    text = """*{campaign_message}*
+    *Objetivo:* {campaign_objective}€
+    *Progreso:* {progress_symbol}{campaign_progress}€
+    La campaña termina a al finalizar el mes.
+    
+    *TOP 5 DONADORES* (desde el comienzo de los tiempos)
+    1. {0}
+    2. {1}
+    3. {2}
+    4. {3}
+    5. {4}
+    
+    Puedes donar en paypal.me/vetu11
+    """.format(*top_5_donors,
+               campaign_message=campaign_info["message"],
+               campaign_objective=campaign_info["objective"],
+               progress_symbol="❌" if campaign_info["progress"] < campaign_info["objective"] else "✅",
+               campaign_progress=campaign_info["progress"])
+
+    message = update.effective_message.reply_text(text,
+                                                           parse_mode=ParseMode.MARKDOWN)
+
+    # Do we have to pin it?
+    if args[1]:
+        bot.pin_chat_message(message.message_id, message.chat_id)
+
+
+def admin_donors(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    conn = database.database.get_connection()
+
+    c = conn.execute("SELECT * FROM donors")
+    result = database.database.get_all_fetched_as_dict(c)
+
+    update.effective_message.reply_text(pp.pformat(result, 2))
+
+    conn.close()
+
+
+def admin_new_donation(bot, update):
+
+    if not _check_admin_id(update):
+        return
+
+    args = update.effective_message.text.replace("/new_donation ", "").split("\n")
+
+    if len(args) < 1 or len(args) > 1:
+        update.effective_message.reply_text("Bad arguments")
+        return
+
+    conn = database.database.get_connection()
+
+    c = conn.execute("SELECT * FROM donors WHERE nick=?", [args[0]])
+    user_info = database.database.get_one_fetched_as_dict(c)
+
+    if not user_info:
+        conn.execute("INSERT INTO donors VALUES (?, ?)", args)
+    else:
+        conn.execute("UPDATE donors SET amount=? WHERE nick=?", [args[1] + user_info["amount"], args[0]])
+    conn.commit()
+    conn.close()
+
+    text = "*%s acaba de donar %s€!* Contribuye con tu capital en paypal.me/vetu11" % args
+
+    for group_id in bot_tokens.AUTHORIZED_GROUPS:
+        bot.send_message(chat_id=group_id,
+                         text=text,
+                         parse_mode=ParseMode.MARKDOWN)
+
+
+def check_group_authorized(bot, update):
+    if update.effective_chat.id not in bot_tokens.AUTHORIZED_GROUPS:
+        update.effective_message.reply_text("UNAUTHORIZED GROUP: %s" % update.effective_chat.id)
+        bot.leave_chat(update.effective_chat.id)

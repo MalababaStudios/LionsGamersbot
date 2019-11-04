@@ -5,6 +5,7 @@ The bot will be run from this file. Here the handler functions will be assigned.
 import logging
 import handlers
 import const
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, CallbackQueryHandler, CommandHandler, MessageHandler, Filters,\
     PreCheckoutQueryHandler, RegexHandler
 
@@ -30,6 +31,9 @@ def main():
     h = updater.dispatcher.add_handler
 
     const.aux.BOT_USERNAME = updater.bot.username
+    handlers.NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notificaciones",
+                                                                     url="t.me/%s?start=notifications"
+                                                                         % const.aux.BOT_USERNAME)]])
 
     # Assigning handlers
     h(CommandHandler("help", handlers.help))
@@ -48,6 +52,13 @@ def main():
     h(RegexHandler(r"/start notifications", handlers.ts3_notifications_panel))
     h(CommandHandler("start", handlers.start))
     h(CallbackQueryHandler(handlers.ts3_notifications_manage, pattern=r"notify_[activate|deactivate]"))
+    h(CommandHandler("/campaigns", handlers.admin_campaigns))
+    h(CommandHandler("/new_campaign", handlers.admin_new_campaign))
+    h(CommandHandler("/end_campaign", handlers.admin_end_campaign))
+    h(CommandHandler("/send_campaign", handlers.admin_send_campaign))
+    h(CommandHandler("/donors", handlers.admin_donors))
+    h(CommandHandler("/now_donation", handlers.admin_new_donation))
+    h(MessageHandler(Filters.status_update.new_chat_members, handlers.check_group_authorized))
 
     updater.dispatcher.add_error_handler(handlers.error)
 
