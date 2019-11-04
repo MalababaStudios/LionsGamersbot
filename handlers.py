@@ -298,7 +298,7 @@ def ts3_command(bot, update):
         text = "*Actualmente conectados:\n\n*"
 
         for channel in channels_in_use:
-            text += "*%s*\n" % str(channel[b"channel_name"])
+            text += "*%s*\n" % channel[b"channel_name"].decode("utf-8")
             for client in clients:
                 if client[b"cid"] == channel[b"cid"]:
                     text = text.replace("{0}", "{1}")
