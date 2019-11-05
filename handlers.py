@@ -367,12 +367,11 @@ def admin_help(bot, update):
         return
 
     commands = """/campaigns
-    /new_campaign (message txt, objective int, repeat (y/N))
-    /end_campaign (id)
-    /send_campaign (id, pin (S/n))
-    /donors
-    /new_donation (nick txt, amount float)
-    """
+/new_campaign (message txt, objective int, repeat (y/N))
+/end_campaign (id)
+/send_campaign (id, pin (S/n))
+/donors
+/new_donation (nick txt, amount float)"""
 
     update.effective_message.reply_text(commands)
 
@@ -476,23 +475,23 @@ def admin_send_campaign(bot, update):
     top_5_donors = [x["nick"] for x in top_5_donors]
     
     text = """*{campaign_message}*
-    *Objetivo:* {campaign_objective}€
-    *Progreso:* {progress_symbol}{campaign_progress}€
-    La campaña termina a al finalizar el mes.
-    
-    *TOP 5 DONADORES* (desde el comienzo de los tiempos)
-    1. {0}
-    2. {1}
-    3. {2}
-    4. {3}
-    5. {4}
-    
-    Puedes donar en paypal.me/vetu11
-    """.format(*top_5_donors,
-               campaign_message=campaign_info["message"],
-               campaign_objective=campaign_info["objective"],
-               progress_symbol="❌" if campaign_info["progress"] < campaign_info["objective"] else "✅",
-               campaign_progress=campaign_info["progress"])
+*Objetivo:* {campaign_objective}€
+*Progreso:* {progress_symbol}{campaign_progress}€
+La campaña termina a al finalizar el mes.
+
+*TOP 5 DONADORES* (desde el comienzo de los tiempos)
+1. {0}
+2. {1}
+3. {2}
+4. {3}
+5. {4}
+
+Puedes donar en paypal.me/vetu11""".format(*top_5_donors,
+                                           campaign_message=campaign_info["message"],
+                                           campaign_objective=campaign_info["objective"],
+                                           progress_symbol="❌"
+                                           if campaign_info["progress"] < campaign_info["objective"] else "✅",
+                                           campaign_progress=campaign_info["progress"])
 
     message = update.effective_message.reply_text(text,
                                                            parse_mode=ParseMode.MARKDOWN)
