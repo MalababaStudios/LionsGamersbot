@@ -374,7 +374,7 @@ def admin_help(bot, update):
     /new_donation (nick txt, amount float)
     """
 
-    update.effective_message.reply_text()
+    update.effective_message.reply_text(commands)
 
 
 def admin_campaigns(bot, update):
