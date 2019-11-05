@@ -355,9 +355,10 @@ def ts3_notifications_manage(bot, update):
 
 
 def _check_admin_id(update):
-    if update.effective_user_id != const.ADMIN_TELEGRAM_ID:
-        logger.warning("UNAUTHORIZED ADMIN COMMAND BY ORDER OF: %s" % update.effective_user)
-    return update.effective_user.id == const.ADMIN_TELEGRAM_ID
+    if update.effective_user.id != const.ADMIN_TELEGRAM_ID:
+        logger.warning("UNAUTHORIZED ADMIN COMMAND BY ORDER OF: %s" % str(update.effective_user))
+        return False
+    return True
 
 
 def admin_help(bot, update):
@@ -375,6 +376,7 @@ def admin_help(bot, update):
 
     update.effective_message.reply_text()
 
+
 def admin_campaigns(bot, update):
 
     if not _check_admin_id(update):
@@ -388,6 +390,7 @@ def admin_campaigns(bot, update):
     update.effective_message.reply_text(pp.pformat(result, 2))
 
     conn.close()
+
 
 def admin_new_campaign(bot, update):
 
