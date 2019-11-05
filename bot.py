@@ -58,7 +58,7 @@ def main():
     h(CommandHandler("end_campaign", handlers.admin_end_campaign))
     h(CommandHandler("send_campaign", handlers.admin_send_campaign))
     h(CommandHandler("donors", handlers.admin_donors))
-    h(CommandHandler("now_donation", handlers.admin_new_donation))
+    h(CommandHandler("new_donation", handlers.admin_new_donation))
     h(MessageHandler(Filters.status_update.new_chat_members, handlers.check_group_authorized))
 
     updater.dispatcher.add_error_handler(handlers.error)

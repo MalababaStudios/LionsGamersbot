@@ -522,7 +522,7 @@ def admin_new_donation(bot, update):
 
     args = update.effective_message.text.replace("/new_donation ", "").split("\n")
 
-    if len(args) < 1 or len(args) > 1:
+    if len(args) < 2 or len(args) > 2:
         update.effective_message.reply_text("Bad arguments")
         return
 
@@ -534,18 +534,18 @@ def admin_new_donation(bot, update):
     if not user_info:
         conn.execute("INSERT INTO donors VALUES (?, ?)", args)
     else:
-        conn.execute("UPDATE donors SET amount=? WHERE nick=?", [args[1] + user_info["amount"], args[0]])
+        conn.execute("UPDATE donors SET amount=? WHERE nick=?", [float(args[1]) + user_info["amount"], args[0]])
 
     c = conn.execute("SELECT * FROM donation_campaigns")
     campaigns = database.database.get_all_fetched_as_dict(c)
 
     for campaign in campaigns:
         c = conn.execute("UPDATE donation_campaigns SET progress=? WHERE id=?",
-                         [args[1] + campaign["progress"], campaign["id"]])
+                         [float(args[1]) + campaign["progress"], campaign["id"]])
     conn.commit()
     conn.close()
 
-    text = "*%s acaba de donar %s€!* Contribuye con tu capital en paypal.me/vetu11" % args
+    text = "*%s acaba de donar %s€!* Contribuye con tu capital en paypal.me/vetu11" % tuple(args)
 
     for group_id in bot_tokens.AUTHORIZED_GROUPS:
         bot.send_message(chat_id=group_id,
