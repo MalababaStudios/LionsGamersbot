@@ -396,7 +396,7 @@ def admin_new_campaign(bot, update):
     if not _check_admin_id(update):
         return
 
-    args = update.effective_message.text.replace("/new_campaigns ", "").split("\n")
+    args = update.effective_message.text.replace("/new_campaign ", "").split("\n")
     if len(args) < 2 or len(args) > 3:
         update.effective_message.reply_text("Bad arguments")
         return
@@ -427,7 +427,7 @@ def admin_end_campaign(bot, update):
     if not _check_admin_id(update):
         return
 
-    args = update.effective_message.text.replace("/new_campaigns ", "").split("\n")
+    args = update.effective_message.text.replace("/end_campaign ", "").split("\n")
 
     if len(args) < 1:
         update.effective_message.reply_text("Bad arguments")
