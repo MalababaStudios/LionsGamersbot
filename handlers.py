@@ -493,12 +493,12 @@ Puedes donar en paypal.me/vetu11""".format(*top_5_donors,
                                            campaign_progress=campaign_info["progress"])
 
     for group_id in bot_tokens.AUTHORIZED_GROUPS:
-        message = update.effective_message.reply_text(text=text,
-                                                      chat_id=group_id,
-                                                      parse_mode=ParseMode.MARKDOWN)
+        message = bot.send_message(text=text,
+                                   chat_id=group_id,
+                                   parse_mode=ParseMode.MARKDOWN)
 
         if args[1]:
-            bot.pin_chat_message(message.message_id, message.chat_id)
+            bot.pin_chat_message(message_id=message.message_id, chat_id=group_id)
 
 
 def admin_donors(bot, update):
