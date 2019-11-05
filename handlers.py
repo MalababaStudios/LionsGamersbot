@@ -492,12 +492,13 @@ Puedes donar en paypal.me/vetu11""".format(*top_5_donors,
                                            if campaign_info["progress"] < campaign_info["objective"] else "✅",
                                            campaign_progress=campaign_info["progress"])
 
-    message = update.effective_message.reply_text(text,
-                                                           parse_mode=ParseMode.MARKDOWN)
+    for group_id in bot_tokens.AUTHORIZED_GROUPS:
+        message = update.effective_message.reply_text(text,
+                                                      chat_id=group_id,
+                                                      parse_mode=ParseMode.MARKDOWN)
 
-    # Do we have to pin it?
-    if args[1]:
-        bot.pin_chat_message(message.message_id, message.chat_id)
+        if args[1]:
+            bot.pin_chat_message(message.message_id, message.chat_id)
 
 
 def admin_donors(bot, update):
