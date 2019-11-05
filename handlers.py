@@ -397,8 +397,7 @@ def admin_new_campaign(bot, update):
         return
 
     args = update.effective_message.text.replace("/new_campaigns ", "").split("\n")
-
-    if args < 2 or args > 3:
+    if len(args) < 2 or len(args) > 3:
         update.effective_message.reply_text("Bad arguments")
         return
 
@@ -415,7 +414,7 @@ def admin_new_campaign(bot, update):
 
     conn = database.database.get_connection()
 
-    sql = "INSERT INTO donation_campaigns (message, objective, progress, repeat_monthly) VALUES (?, ?, ?, ?)"
+    sql = "INSERT INTO donation_campaigns (message, objective, progress, repeat_monthly) VALUES (?, ?, 0, ?)"
     conn.execute(sql, args)
     conn.commit()
     conn.close()
@@ -536,6 +535,13 @@ def admin_new_donation(bot, update):
         conn.execute("INSERT INTO donors VALUES (?, ?)", args)
     else:
         conn.execute("UPDATE donors SET amount=? WHERE nick=?", [args[1] + user_info["amount"], args[0]])
+
+    c = conn.execute("SELECT * FROM donation_campaigns")
+    campaigns = database.database.get_all_fetched_as_dict(c)
+
+    for campaign in campaigns:
+        c = conn.execute("UPDATE donation_campaigns SET progress=? WHERE id=?",
+                         [args[1] + campaign["progress"], campaign["id"]])
     conn.commit()
     conn.close()
 
