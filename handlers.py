@@ -10,6 +10,7 @@ import requests
 import database
 import logging
 import pprint as pp
+from time import time
 from bot_tokens import PAYMENT_PROVIDER_TOKEN
 from lang import get_lang
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
@@ -21,6 +22,8 @@ NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notif
 
 logger = logging.getLogger(__name__)
 ts3_connections = []
+last_ts3_command_usage = time() - const.GROUP_COMMAND_USAGE_DELAY
+last_discord_command_usage = time() - const.GROUP_COMMAND_USAGE_DELAY
 
 
 def generic_message(bot, update, text_code, **kwargs):
@@ -31,8 +34,14 @@ def generic_message(bot, update, text_code, **kwargs):
     message.reply_text(lang.get_text(text_code, **kwargs), parse_mode=ParseMode.MARKDOWN)
 
 
-def start(bot, update):
-    generic_message(bot, update, "start")
+def start(bot, update, args):
+    if not args:
+        generic_message(bot, update, "start")
+    else:
+        if args[0] == "discord":
+            discord_command(bot, update)
+        elif args[0] == "ts3":
+            ts3_command(bot, update)
 
 
 def help(bot, update):
@@ -270,6 +279,22 @@ def check_new_connections(clients):
     return new
 
 
+def discord_command_group(bot, update):
+    global last_discord_command_usage
+    lang = get_lang(update.effective_user.language_code)
+
+    # Check if the command was used early in the group.
+    if last_discord_command_usage + const.GROUP_COMMAND_USAGE_DELAY < time() or \
+            update.effective_user.id == const.ADMIN_TELEGRAM_ID:
+        discord_command(bot, update)
+    else:
+        keyboard = [[InlineKeyboardButton(lang.get_text("use_in_pm"), url="t.me/%s?start=discord" %
+                                                                          const.aux.BOT_USERNAME)]]
+        update.effective_message.reply_text(lang.get_text("use_the_command_in_private_chat"),
+                                            reply_markup=InlineKeyboardMarkup(keyboard))
+    last_discord_command_usage = time()
+
+
 def discord_command(bot, update):
     trad = {"idle": "Ausente",
             "online": "En linea",
@@ -291,6 +316,22 @@ def discord_command(bot, update):
                                         parse_mode="Markdown",
                                         disable_web_page_preview=True,
                                         quote=False)
+
+
+def ts3_command_group(bot, update):
+    global last_ts3_command_usage
+    lang = get_lang(update.effective_user.language_code)
+
+    # Check if the command was used early in the group.
+    if last_ts3_command_usage + const.GROUP_COMMAND_USAGE_DELAY < time() or \
+            update.effective_user.id == const.ADMIN_TELEGRAM_ID:
+        discord_command(bot, update)
+    else:
+        keyboard = [[InlineKeyboardButton(lang.get_text("use_in_pm"), url="t.me/%s?start=ts3" %
+                                                                          const.aux.BOT_USERNAME)]]
+        update.effective_message.reply_text(lang.get_text("use_the_command_in_private_chat"),
+                                            reply_markup=InlineKeyboardMarkup(keyboard))
+    last_ts3_command_usage = time()
 
 
 def ts3_command(bot, update):

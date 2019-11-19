@@ -13,5 +13,7 @@
   "donation_description": "Gracias por aportar a este proyecto. Usa el botón pagar para proceder al pago.",
   "donations_not_available": "En este momento las donaciones no están disponibles. Puedes contactar con el desarrolador con /support",
   "donation_completed": "Muchas gracias por donar ",
-  "notifications_panel": "Activa/desactiva las notificaciones de quién se conecta a ts3"
+  "notifications_panel": "Activa/desactiva las notificaciones de quién se conecta a ts3",
+  "use_the_command_in_private_chat": "Para evitar flood, por favor, usa este comando en nuetro chat privado.",
+  "use_in_pm": "\uD83D\uDCF2 Usar en privado"
 }
