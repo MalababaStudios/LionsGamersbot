@@ -325,7 +325,7 @@ def ts3_command_group(bot, update):
     # Check if the command was used early in the group.
     if last_ts3_command_usage + const.GROUP_COMMAND_USAGE_DELAY < time() or \
             update.effective_user.id == const.ADMIN_TELEGRAM_ID:
-        discord_command(bot, update)
+        ts3_command(bot, update)
     else:
         keyboard = [[InlineKeyboardButton(lang.get_text("use_in_pm"), url="t.me/%s?start=ts3" %
                                                                           const.aux.BOT_USERNAME)]]
