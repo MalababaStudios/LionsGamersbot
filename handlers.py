@@ -509,9 +509,9 @@ def admin_send_campaign(bot, update):
 
     c = conn.execute("SELECT * FROM donation_campaigns WHERE id=?", [args[0]])
     campaign_info = database.database.get_one_fetched_as_dict(c)
-    c = conn.execute("SELECT nick FROM donors ORDER BY amount DESC LIMIT 5")
+    c = conn.execute("SELECT nick, amount  FROM donors ORDER BY amount DESC LIMIT 5")
     top_5_donors = database.database.get_all_fetched_as_dict(c)
-    top_5_donors = [x["nick"] for x in top_5_donors]
+    top_5_donors = ["%s (%s)" % (x["nick"], x["amount"]) for x in top_5_donors]
     conn.close()
 
     text = """*{campaign_message}*
