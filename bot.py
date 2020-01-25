@@ -49,8 +49,6 @@ def main():
     h(PreCheckoutQueryHandler(handlers.approve_transaction))
     h(CommandHandler("ts3", handlers.ts3_command_group, filters=Filters.group))
     h(CommandHandler("ts3", handlers.ts3_command, filters=Filters.private))
-    h(CommandHandler("discord", handlers.discord_command_group, filters=Filters.group))
-    h(CommandHandler("discord", handlers.discord_command, filters=Filters.private))
     h(RegexHandler(r"/start notifications", handlers.ts3_notifications_panel))
     h(CommandHandler("start", handlers.start, pass_args=True))
     h(CallbackQueryHandler(handlers.ts3_notifications_manage, pattern=r"notify_[activate|deactivate]"))

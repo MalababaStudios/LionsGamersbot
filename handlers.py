@@ -23,7 +23,6 @@ NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notif
 logger = logging.getLogger(__name__)
 ts3_connections = []
 last_ts3_command_usage = time() - const.GROUP_COMMAND_USAGE_DELAY
-last_discord_command_usage = time() - const.GROUP_COMMAND_USAGE_DELAY
 
 
 def generic_message(bot, update, text_code, **kwargs):
@@ -38,9 +37,7 @@ def start(bot, update, args):
     if not args:
         generic_message(bot, update, "start")
     else:
-        if args[0] == "discord":
-            discord_command(bot, update)
-        elif args[0] == "ts3":
+        if args[0] == "ts3":
             ts3_command(bot, update)
 
 
@@ -277,45 +274,6 @@ def check_new_connections(clients):
     ts3_connections = list(tmp)
 
     return new
-
-
-def discord_command_group(bot, update):
-    global last_discord_command_usage
-    lang = get_lang(update.effective_user.language_code)
-
-    # Check if the command was used early in the group.
-    if last_discord_command_usage + const.GROUP_COMMAND_USAGE_DELAY < time() or \
-            update.effective_user.id == const.ADMIN_TELEGRAM_ID:
-        discord_command(bot, update)
-    else:
-        keyboard = [[InlineKeyboardButton(lang.get_text("use_in_pm"), url="t.me/%s?start=discord" %
-                                                                          const.aux.BOT_USERNAME)]]
-        update.effective_message.reply_text(lang.get_text("use_the_command_in_private_chat"),
-                                            reply_markup=InlineKeyboardMarkup(keyboard))
-    last_discord_command_usage = time()
-
-
-def discord_command(bot, update):
-    trad = {"idle": "Ausente",
-            "online": "En linea",
-            "dnd": "No molestar"}
-    text = ""
-    jj = json.loads(requests.get(bot_tokens.DISCORD_PANEL_URL).content)
-
-    for member in jj["members"]:
-        if member["status"] != "dnd":
-            text += "*%s* - %s\n" % (member["username"],
-                                   member["game"]["name"] if "game" in member else trad[member["status"]])
-
-    if not text:
-        text += "*No hay nadie conectado*\n"
-
-    text = "*%s*\n\n" % jj["name"] + text + "\n*Link* %s" % jj["instant_invite"]
-
-    update.effective_message.reply_text(text=text,
-                                        parse_mode="Markdown",
-                                        disable_web_page_preview=True,
-                                        quote=False)
 
 
 def ts3_command_group(bot, update):
