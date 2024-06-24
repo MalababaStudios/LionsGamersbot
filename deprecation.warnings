@@ -1,0 +1,10 @@
+bot.py:30: TelegramDeprecationWarning: Old Handler API is deprecated - see https://git.io/fxJuV for details
+  updater = Updater(BOT_TOKEN)
+bot.py:52: TelegramDeprecationWarning: RegexHandler is deprecated. See https://git.io/fxJuV for more info
+  h(RegexHandler(r"/start notifications", handlers.ts3_notifications_panel))
+/usr/local/lib/python3.7/dist-packages/telegram/ext/regexhandler.py:121: TelegramDeprecationWarning: message_updates is deprecated. See https://git.io/fxJuV for more info
+  edited_updates=edited_updates)
+/usr/local/lib/python3.7/dist-packages/telegram/ext/regexhandler.py:121: TelegramDeprecationWarning: channel_post_updates is deprecated. See https://git.io/fxJuV for more info
+  edited_updates=edited_updates)
+/usr/local/lib/python3.7/dist-packages/telegram/ext/regexhandler.py:121: TelegramDeprecationWarning: edited_updates is deprecated. See https://git.io/fxJuV for more info
+  edited_updates=edited_updates)
