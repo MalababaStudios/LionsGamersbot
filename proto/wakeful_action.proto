@@ -1,0 +1,12 @@
+syntax = "proto3";
+package wakeful_action;
+
+message WakeRequest {}
+message WakeSuccessful {
+  bool success = 1;
+}
+
+service WakefulService {
+  rpc WakeUp(WakeRequest) returns (WakeSuccessful) {}
+}
+

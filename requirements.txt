@@ -1,2 +1,4 @@
 requests
 python-telegram-bot>=11,<13
+grpcio
+grpcio-tools

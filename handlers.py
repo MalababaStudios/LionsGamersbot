@@ -13,8 +13,9 @@ import pprint as pp
 from time import time
 from bot_tokens import PAYMENT_PROVIDER_TOKEN
 from lang import get_lang
-from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
+from telegram import Bot, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice, Update, ChatAction
 from telegram.error import BadRequest
+from wakeful_action import wakeup
 
 NOTIFY_KEYBOARD_MARKUP = InlineKeyboardMarkup([[InlineKeyboardButton("🔔 Notificaciones",
                                                                      url="t.me/%s?start=notifications"
@@ -274,6 +275,15 @@ def check_new_connections(clients):
     ts3_connections = list(tmp)
 
     return new
+
+def run_server(bot, update):
+    # Send the wakeup call
+    bot.send_chat_action(update.effective_chat.id, ChatAction.TYPING)
+
+    if wakeup():
+        update.effective_message.reply_text("El servidor derebería iniciarse en breve, si no es así, pega un grito por la ventana a Ventura.")
+    else:
+        update.effective_message.reply_text("Ha ocurrido un error al iniciar el servidor. Momento de pegar una paliza a vetu (choose your weapon 🔪/👊/💋)")
 
 
 def ts3_command_group(bot, update):
